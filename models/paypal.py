@@ -3,10 +3,14 @@
 import os
 import paypalrestsdk
 
+paypal_mode = os.environ.get('PAYPAL_MODE', 'sandbox')
+paypal_client_id = os.environ['PAYPAL_CLIENT_ID']
+paypal_client_secret = os.environ['PAYPAL_CLIENT_SECRET']
+
 paypalrestsdk.configure({
-  "mode": os.environ.get('PAYPAL_MODE', 'sandbox'), # or "live"
-  "client_id": os.environ['PAYPAL_CLIENT_ID'],
-  "client_secret": os.environ['PAYPAL_CLIENT_SECRET']
+  "mode": paypal_mode, # or "live"
+  "client_id": paypal_client_id,
+  "client_secret": paypal_client_secret
 })
 
 def create_payment(amount, redirect_urls):

@@ -2,28 +2,19 @@
 <html>
 <head>
   <title>Online Ticket System - Dashboard</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
 </head>
 <body>
-    <div class="menu-container">
-      <div class="menu-toggle">
-        <div class="circle">AB</div>
-      </div>
-      <nav class="menu">
-        <ul>
-          <li><a href="#">My Profile</a></li>
-          <li><a href="#">My Tickets</a></li>
-          <li><a href="#">My Events</a></li>
-          <li><a href="#">Logout</a></li>
-        </ul>
-      </nav>
-    </div>
-  <div class="main-content">
     <header>
-      <h1>Online Ticket System</h1>
-      {% if user_name %}
-        <p>Welcome, {{ user_name }}!</p>
-      {% endif %}
+        <h1>Online Ticket System</h1>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('event_tickets', event_id=events.id) }}">My Tickets</a></li>
+                <li><a href="{{ url_for('ticket_detail', event_id=events.id) }}">My Events</a></li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            </ul>
+        </nav>
     </header>
     
     <main>

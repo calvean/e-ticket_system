@@ -43,14 +43,17 @@
                     <td>{{ event.description }}</td>
                     <td><img src="{{ event.image }}" alt="{{ event.name }}"></td>
                     <td>{{ event.category }}</td>
-                    <td>{{ get_tickets_count(event.id) }}</td>
-                    <td>{{ get_tickets_count(event.id) }}</td>
+                    <td><a href="{{ url_for('view_tickets', event_id=event.id) }}">
+                        {{ ticket_counts.get(event.id, 0) }}
+                        </a>
+                    </td>
+                    <td>{{ ticket_sold.get(event.id, 0) }}</td>
                     <td>
-                        <a href="{{ url_for('edit_event', event_id=event.id) }}">Edit</a>
+                        <a href="{{ url_for('edit_event', event_id=event.id) }}">Edit Event</a>
                         <a href="{{ url_for('new_ticket', event_id=event.id) }}">Add Tickets</a>
                         <form action="{{ url_for('delete_event', event_id=event.id) }}" method="POST">
                             <input type="hidden" name="_method" value="DELETE">
-                            <button type="submit">Delete</button>
+                            <button type="submit">Delete Event</button>
                         </form>
                     </td>
                 </tr>

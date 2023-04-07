@@ -2,8 +2,6 @@
 from flask import Flask
 from database import create_connection, create_tables, insert_event, insert_user, check_database
 
-
-
 UPLOAD_FOLDER = 'uploads'
 
 

@@ -77,6 +77,7 @@ class Ticket:
 
         tickets = []
         for row in rows:
+            print("Get event by id method:{}".format(row))
             ticket = cls(*row)
             tickets.append(ticket)
 
@@ -99,4 +100,13 @@ class Ticket:
 
         return tickets
 
+    @classmethod
+    def delete_by_event_id(cls, event_id):
+        conn = create_connection()
+        cursor = conn.cursor()
+
+        query = "DELETE FROM tickets WHERE event_id=%s"
+        cursor.execute(query, (event_id,))
+        conn.commit()
+        conn.close()
 

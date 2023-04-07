@@ -1,0 +1,130 @@
+/* Font */
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Colors */
+:root {
+  --primary-color: #3c00a0;
+  --secondary-color: #eee;
+  --accent-color: #4c4c4c;
+  --warning-color: #ff6347;
+}
+
+/* Header */
+header {
+  background-color: var(--primary-color);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+}
+
+/* Navigation */
+nav ul {
+list-style: none;
+display: flex;
+}
+
+nav li {
+margin-right: 20px;
+}
+
+nav a {
+color: white;
+text-decoration: none;
+font-weight: bold;
+font-size: 18px;
+transition: all 0.3s ease-in-out;
+}
+
+nav a:hover {
+color: var(--secondary-color);
+}
+
+/* Hero Section */
+.hero {
+background-image: url('hero.jpg');
+background-size: cover;
+background-position: center;
+height: 500px;
+display: flex;
+justify-content: center;
+align-items: center;
+}
+
+.hero h1 {
+font-size: 50px;
+text-align: center;
+text-shadow: 2px 2px var(--accent-color);
+}
+
+.hero p {
+font-size: 24px;
+text-align: center;
+text-shadow: 2px 2px var(--accent-color);
+margin-bottom: 30px;
+}
+
+.hero .btn {
+display: block;
+margin: 0 auto;
+padding: 10px 20px;
+background-color: var(--secondary-color);
+color: var(--primary-color);
+text-transform: uppercase;
+border-radius: 5px;
+transition: all 0.3s ease-in-out;
+}
+
+.hero .btn:hover {
+transform: translateY(-5px);
+box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Features Section */
+.features {
+background-color: var(--accent-color);
+color: white;
+padding: 50px 0;
+}
+
+.features h2 {
+font-size: 36px;
+margin-bottom: 20px;
+}
+
+.features p {
+font-size: 18px;
+margin-bottom: 30px;
+}
+
+.features .container {
+display: flex;
+justify-content: space-around;
+align-items: center;
+flex-wrap: wrap;
+}
+
+.features .feature {
+text-align: center;
+margin: 30px;
+flex-basis: 30%;
+}
+
+.features .feature img {
+width: 200px;
+height: 200px;
+object-fit: cover;
+border-radius: 50%;
+margin-bottom: 20px;
+}
+
+/* Footer */
+footer {
+background-color: var(--primary-color);
+color: white;
+text-align: center;
+padding: 20px;
+}

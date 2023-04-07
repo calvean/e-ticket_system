@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+""" Routes Module """
 from flask import Flask, render_template, request, redirect, session, url_for, flash
 from datetime import datetime, time
 from models.event import Event
@@ -12,23 +13,11 @@ from werkzeug.utils import secure_filename
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
-@app.route('/')
-def home():
-    if 'user_id' not in session:
-        return redirect(url_for('login_user'))
 
-    events = Event.get_all()
-    print(events)
-    user = User.get_by_id(session['user_id'])
-    return render_template('dashboard.html', events=events, user=user)
+""" Authentication Routes """
 
-
-@app.route('/events/<int:event_id>')
-def event_detail(event_id):
-    event = Event.get_by_id(event_id)
-    return render_template('event_detail.html', event=event)
-
-@app.route('/register', methods=['GET', 'POST'])
+""" User Registration """
+@app.route('/users/register', methods=['GET', 'POST'])
 def register_user():
     if request.method == 'POST':
         name = request.form['name']
@@ -47,10 +36,11 @@ def register_user():
         print(user)
         session['user_id'] = user.id
         session['role'] = user.role
-        return redirect('/')
+        return redirect(url_for('home'))
     else:
         return render_template('register.html')
 
+""" User login route """
 @app.route('/login', methods=['GET', 'POST'])
 def login_user():
     if request.method == 'POST':
@@ -62,65 +52,117 @@ def login_user():
             session['user_id'] = user.id
             session['role'] = user.role
             if user.role == 'admin':
-                return redirect('/admin')
+                return redirect(url_for('admin_dashboard'))
             else:
-                return redirect('/')
+                return redirect(url_for('home'))
         else:
             flash('Invalid email or password', 'error')
     return render_template('login.html')
 
-
-@app.route('/admin')
-def admin_dashboard():
-    if 'user_id' not in session:
-        return redirect('/login')
-    user = User.get_by_id(session['user_id'])
-    if user.role != 'admin':
-        return redirect('/')
-    # Retrieve data for admin dashboard
-    users = User.get_all()
-    events = Event.get_all()
-    tickets = Ticket.get_all()
-    return render_template('admin.html', users=users, events=events, user=user)
-
-def get_ticket_count(event_id):
-    tickets = Ticket.get_by_event_id(event_id)
-    count = 0
-    for ticket in tickets:
-        count += ticket.quantity
-    return count
-
+""" Logout User/Admin """
 @app.route('/logout')
 def logout():
     session.clear()
-    return redirect('/')
-
-# Check if the file type is allowed
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    return redirect(url_for('home'))
 
 
+""" User Routes """
 
-def upload_file():
-    # Check if the post request has the file part
-    if 'image' not in request.files:
-        flash('No file part')
-        return redirect(request.url)
-    file = request.files['image']
-    # If the user does not select a file, the browser submits an empty file without a filename
-    if file.filename == '':
-        flash('No selected file')
-        return redirect(request.url)
-    if file and allowed_file(file.filename):
-        # Secure the filename to prevent malicious injections
-        filename = secure_filename(file.filename)
-        # Save the file to the upload folder
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        print(filename)
-        # Return the filename
-        return filename
+"""Route to User Home """
+@app.route('/')
+def home():
+    if 'user_id' not in session:
+        return redirect(url_for('login_user'))
 
-@app.route('/create_event', methods=['GET', 'POST'])
+    events = Event.get_all()
+    print(events)
+    user = User.get_by_id(session['user_id'])
+    return render_template('dashboard.html', events=events, user=user)
+
+
+""" Admin Routes """
+
+""" Admin Home Route """
+@app.route('/admin')
+def admin_dashboard():
+    if 'user_id' not in session:
+        return redirect(url_for('login_user'))
+    user = User.get_by_id(session['user_id'])
+    if user.role != 'admin':
+        return redirect(url_for('home'))
+    # Retrieve data for admin dashboard
+    users = User.get_all()
+    events = Event.get_all()
+
+    tickets = Ticket.get_all()
+    
+    # Get ticket count for each event
+    ticket_counts = {}
+    ticket_sold = {}
+    for event in events:
+        ticket_counts[event.id] = get_ticket_count(event.id)[0]
+        ticket_sold[event.id] = get_ticket_count(event.id)[1]
+        print("Event_id:{}".format(event.id))
+    return render_template('admin.html', users=users, events=events, user=user, ticket_counts=ticket_counts, ticket_sold=ticket_sold)
+
+""" Admin View Tickets """
+@app.route('/admin/view_tickets/<int:event_id>')
+def view_tickets(event_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login_user'))
+    user = User.get_by_id(session['user_id'])
+    if user.role != 'admin':
+        return redirect(url_for('home'))
+    event = Event.get_by_id(event_id)
+    tickets = Ticket.get_by_event_id(event_id)
+    ticket_count = sum(ticket.event_id for ticket in tickets)
+    return render_template('view_tickets.html', event=event, ticket_count=ticket_count, tickets=tickets)
+
+""" Admin Add New Tickets """
+@app.route('/admin/events/<int:event_id>/tickets/new', methods=['GET', 'POST'])
+def new_ticket(event_id):
+    if 'user_id' not in session:
+        return redirect(url_for('admin_dashboard'))
+    user = User.get_by_id(session['user_id'])
+    if user is None:
+        return redirect(url_for('admin_dashboard'))
+    event = Event.get_by_id(event_id)
+    if event is None:
+        return redirect(url_for('admin_dashboard'))
+    if request.method == 'POST':
+        quantity = int(request.form['quantity'])
+        if quantity > 0:
+            ticket = create_tickets_for_event(event_id, quantity)
+            return redirect(url_for('admin_dashboard'))
+        else:
+            return render_template('new_ticket.html', event=event, error='Invalid quantity')
+    else:
+        return render_template('new_ticket.html', event=event)
+
+""" Delete  a Ticket for an Event """ 
+@app.route('/admin/tickets/<int:event_id>/<int:ticket_id>/delete', methods=['POST'])
+def delete_ticket(ticket_id, event_id):
+    if 'user_id' not in session or session['role'] != 'admin':
+        return redirect('/')
+    ticket = Ticket.get_by_id(ticket_id)
+    if ticket is None:
+        return redirect('/admin')
+    ticket.delete()
+    return redirect(url_for('view_tickets', event_id=event_id))
+
+""" Delete all tickets for an event """
+@app.route('/tickets/<int:event_id>/delete', methods=['POST'])
+def delete_all_tickets(event_id):
+    if 'user_id' not in session or session['role'] != 'admin':
+        return redirect('/')
+    tickets = Ticket.get_by_event_id(event_id)
+    for ticket in tickets:
+        ticket.delete()
+    return redirect(url_for('view_tickets', event_id=event_id))
+
+
+""" Admin Create An Event """
+@app.route('/admin/create_event', methods=['GET', 'POST'])
 def create_event():
     if 'user_id' not in session or session['role'] != 'admin':
         return redirect('/')
@@ -143,18 +185,19 @@ def create_event():
         event = Event(name=name, description=description, date=event_date_time_str, price=price, venue=venue, category=category, image=image)
         event.save()
         flash('Event created successfully!', 'success')
-        return redirect('/admin')
+        return redirect(url_for('admin_dashboard'))
 
     else:
         return render_template('create_event.html')
 
-@app.route('/events/<int:event_id>/edit', methods=['GET', 'POST'])
+""" Edit Event """
+@app.route('/admin/events/<int:event_id>/edit', methods=['GET', 'POST'])
 def edit_event(event_id):
     if 'user_id' not in session or session['role'] != 'admin':
-        return redirect('/')
+        return redirect(url_for('home'))
     event = Event.get_by_id(event_id)
     if event is None:
-        return redirect('/')
+        return redirect(url_for('home'))
     if request.method == 'POST':
         event.name = request.form['name']
         event.description = request.form['description']
@@ -164,19 +207,106 @@ def edit_event(event_id):
         event.category = request.form['category']
         event.image = request.form['image']
         event.save()
-        return redirect('/events/{}'.format(event.id))
+        return redirect(url_for('view_events',event_id=event.id))
     else:
         return render_template('edit_event.html', event=event)
 
-@app.route('/events/<int:event_id>/delete', methods=['POST'])
+""" Admin Delete Event """
+@app.route('/admin/events/<int:event_id>/delete', methods=['POST'])
 def delete_event(event_id):
     if 'user_id' not in session or session['role'] != 'admin':
         return redirect('/')
     event = Event.get_by_id(event_id)
     if event is None:
-        return redirect('/admin')
+        return redirect(url_for('admin_dashboard'))
     event.delete()
-    return redirect('/admin')
+    return redirect(url_for('admin_dashboard'))
+
+""" Update user Info """
+@app.route('/admin/users/<int:user_id>', methods=['POST'])
+def update_user(user_id):
+    user = User.get_by_id(user_id)
+    if user is None:
+        return redirect('/users')
+    name = request.form['name']
+    email = request.form['email']
+    password = request.form['password']
+    user.name = name
+    user.email = email
+    user.password = password
+    user.save()
+    return redirect('/users/{}'.format(user.id))
+
+""" Admin Delete Users"""
+@app.route('/admin/users/<int:user_id>/delete', methods=['POST'])
+def delete_user(user_id):
+    if session.get('role') != 'admin':
+        abort(403)
+    print(user_id)
+    user = User.get_by_id(user_id)
+    if user is not None:
+        user.delete()
+    return redirect(request.referrer)
+
+""" Update User Role """
+@app.route('/admin/users/<int:user_id>/toggle-role', methods=['POST'])
+def update_role(user_id):
+    if session.get('role') != 'admin':
+        abort(403)
+
+    user = User.get_by_id(user_id)
+    if user is None:
+        abort(404)
+
+    new_role = 'user' if user.role == 'admin' else 'admin'
+    User.update_role(user_id, new_role)
+
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/users/events/<int:event_id>')
+def event_detail(event_id):
+    event = Event.get_by_id(event_id)
+    return render_template('event_detail.html', event=event)
+
+
+""" Get The number of Tickets for an event """
+def get_ticket_count(event_id):
+    tickets = Ticket.get_by_event_id(event_id)
+    sold_tickets = 0
+    ticket_count = []
+    for ticket in tickets:
+        print("tickets:{}".format(ticket_count))
+        if ticket.status == 'Sold':
+            sold_tickets += 1
+    total_tickets = len(tickets)
+    ticket_count = [total_tickets, sold_tickets ]
+    return ticket_count
+
+
+"""Check if the file type is allowed """
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+"""" Upload a file for an event """
+def upload_file():
+    # Check if the post request has the file part
+    if 'image' not in request.files:
+        flash('No file part')
+        return redirect(request.url)
+    file = request.files['image']
+    # If the user does not select a file, the browser submits an empty file without a filename
+    if file.filename == '':
+        flash('No selected file')
+        return redirect(request.url)
+    if file and allowed_file(file.filename):
+        # Secure the filename to prevent malicious injections
+        filename = secure_filename(file.filename)
+        # Save the file to the upload folder
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        print(filename)
+        # Return the filename
+        return filename
 
 @app.route('/events/<int:event_id>/buy_tickets', methods=['GET', 'POST'])
 def buy_tickets(event_id):
@@ -243,8 +373,8 @@ def buy_tickets_confirm(event_id):
     flash('Payment successful!')
     return redirect('/events/{}'.format(event_id))
 
-
-@app.route('/events/<int:event_id>/tickets')
+""" Event Tickets """
+@app.route('/user/events/<int:event_id>/tickets')
 def event_tickets(event_id):
     event = Event.get_by_id(event_id)
     if event is None:
@@ -252,11 +382,14 @@ def event_tickets(event_id):
     tickets = event.get_tickets()
     return render_template('event_tickets.html', event=event, tickets=tickets)
 
+""" Create tickets for an event """
 def create_tickets_for_event(event_id, quantity):
     # Get the event and its price
     event = Event.get_by_id(event_id)
     price = event.price
-
+    
+    print("Event_id from create ticket fun:{}".format(event.id))
+    print("Event_price from create ticket fun:{}".format(event.price))
     # Create the tickets
     tickets = []
     for i in range(quantity):
@@ -266,25 +399,7 @@ def create_tickets_for_event(event_id, quantity):
 
     return tickets
 
-@app.route('/events/<int:event_id>/tickets/new', methods=['GET', 'POST'])
-def new_ticket(event_id):
-    if 'user_id' not in session:
-        return redirect('/login')
-    user = User.get_by_id(session['user_id'])
-    if user is None:
-        return redirect('/')
-    event = Event.get_by_id(event_id)
-    if event is None:
-        return redirect('/')
-    if request.method == 'POST':
-        quantity = int(request.form['quantity'])
-        if quantity > 0:
-            ticket = create_tickets_for_event(event_id, quantity)
-            return redirect('/admin')
-        else:
-            return render_template('new_ticket.html', event=event, error='Invalid quantity')
-    else:
-        return render_template('new_ticket.html', event=event)
+
 
 @app.route('/tickets/<int:ticket_id>')
 def ticket_detail(ticket_id):
@@ -308,15 +423,6 @@ def edit_ticket(ticket_id):
     else:
         return render_template('edit_ticket.html', ticket=ticket)
 
-@app.route('/tickets/<int:ticket_id>/delete', methods=['POST'])
-def delete_ticket(ticket_id):
-    if 'user_id' not in session or session['role'] != 'admin':
-        return redirect('/')
-    ticket = Ticket.get_by_id(ticket_id)
-    if ticket is None:
-        return redirect('/')
-    ticket.delete()
-    return redirect('/')
 
 @app.route('/users', methods=['GET'])
 def get_users():
@@ -338,45 +444,6 @@ def get_user_by_email(email):
     if user is None:
         return redirect('/users')
     return render_template('user.html', user=user)
-
-@app.route('/users/<int:user_id>', methods=['POST'])
-def update_user(user_id):
-    user = User.get_by_id(user_id)
-    if user is None:
-        return redirect('/users')
-    name = request.form['name']
-    email = request.form['email']
-    password = request.form['password']
-    user.name = name
-    user.email = email
-    user.password = password
-    user.save()
-    return redirect('/users/{}'.format(user.id))
-
-@app.route('/users/<int:user_id>/delete', methods=['POST'])
-def delete_user(user_id):
-    if session.get('role') != 'admin':
-        abort(403)
-    print(user_id)
-    user = User.get_by_id(user_id)
-    if user is not None:
-        user.delete()
-    return redirect(request.referrer)
-
-@app.route('/users/<int:user_id>/toggle-role', methods=['POST'])
-def update_role(user_id):
-    if session.get('role') != 'admin':
-        abort(403)
-
-    user = User.get_by_id(user_id)
-    if user is None:
-        abort(404)
-
-    new_role = 'user' if user.role == 'admin' else 'admin'
-    User.update_role(user_id, new_role)
-
-    return redirect('/admin')
-
 
 
 if __name__ == '__main__':
