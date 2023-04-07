@@ -1,0 +1,69 @@
+In this example, the app/ directory contains the main application code, while the routes/ directory contains all the routes split into individual files. The templates/ directory contains all the HTML templates split into subdirectories for each entity.
+
+The __init__.py file in the app/ and routes/ directories is used to define the Flask application and register the routes, respectively.
+
+The config.py file contains the configuration settings for the application, such as the database connection information and secret key.
+
+The database.py file contains the code for creating and managing the database connection.
+
+The models.py file defines the database models using SQLAlchemy.
+
+
+app/
+├── __init__.py
+├── config.py
+├── database.py
+├── models.py
+├── routes/
+│   ├── __init__.py
+│   ├── event.py
+│   ├── home.py
+│   ├── ticket.py
+│   └── user.py
+└── templates/
+    ├── base.html
+    ├── home.html
+    ├── login.html
+    ├── register.html
+    ├── event/
+    │   ├── create.html
+    │   ├── detail.html
+    │   └── edit.html
+    ├── ticket/
+    │   ├── purchase.html
+    │   └── success.html
+    └── user/
+        ├── profile.html
+        └── edit.html
+
+
+    User Authentication API:
+        Register User: POST /api/register
+        Login User: POST /api/login
+        Logout User: POST /api/logout
+
+    Event API:
+        Create Event: POST /api/events
+        Get All Events: GET /api/events
+        Get Event Details: GET /api/events/{id}
+        Update Event: PUT /api/events/{id}
+        Delete Event: DELETE /api/events/{id}
+
+    Ticket API:
+        Purchase Ticket: POST /api/tickets
+        Get All Tickets for an Event: GET /api/events/{id}/tickets
+        Get Ticket Details: GET /api/tickets/{id}
+        Cancel Ticket: PUT /api/tickets/{id}/cancel
+
+    User API:
+        Get User Details: GET /api/users/{id}
+        Update User Details: PUT /api/users/{id}
+
+    Payment API:
+        Process Payment: POST /api/payments
+        Refund Payment: PUT /api/payments/{id}/refund
+
+    Email API:
+        Send Ticket Confirmation: POST /api/email/ticket_confirmation
+        Send Payment Receipt: POST /api/email/payment_receipt
+        Send Event Reminder: POST /api/email/event_reminder

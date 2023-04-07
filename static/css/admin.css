@@ -1,0 +1,148 @@
+/* Font */
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Colors */
+:root {
+  --primary-color: #3c00a0;
+  --secondary-color: #eee;
+  --accent-color: #4c4c4c;
+  --warning-color: #ff6347;
+}
+
+/* Header */
+header {
+  background-color: var(--primary-color);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+}
+
+nav ul li a {
+  color: white;
+  text-decoration: none;
+  padding: 10px;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+nav ul li a:hover {
+  background-color: var(--secondary-color);
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 30px;
+}
+
+th {
+  text-align: left;
+  padding: 10px;
+  background-color: var(--primary-color);
+  color: white;
+}
+
+td {
+  padding: 10px;
+  border-bottom: 1px solid var(--accent-color);
+}
+
+td a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+td a:hover {
+  text-decoration: underline;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.table-header h2 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.table-header button[type="submit"] {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.table-header button[type="submit"]:hover {
+  background-color: var(--secondary-color);
+}
+
+.table-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+}
+
+.table-actions button[type="submit"] {
+  background-color: var(--warning-color);
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.table-actions button[type="submit"]:hover {
+  background-color: #ff4136;
+}
+
+table td.user-role {
+  text-transform: capitalize;
+}
+
+table td.user-role.admin {
+  font-weight: bold;
+}
+
+.table-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.table-pagination button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  margin: 0 5px;
+  transition: color 0.3s;
+}
+
+.table-pagination button:hover {
+  color: var(--primary-color);
+}
+
+.table-pagination button.active {
+  color: var(--primary-color);
+  font-weight: bold;
+}
+

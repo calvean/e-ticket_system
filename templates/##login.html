@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Eventicket Login</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+        <script src="https://kit.fontawesome.com/b48f23dc44.js" crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="form-box">
+                <h1 id="form-title">Sign In</h1>
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        <ul class="flashes">
+                            {% for message in messages %}
+                                <li>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                {% endwith %}
+                <form id="signin-form" method="POST">
+                    <div class="input-group">
+                        <div class="input-field">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" placeholder="Email" name="email">                        
+                        </div>
+
+                        <div class="input-field">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" placeholder="Password" name="password">                        
+                        </div>
+                    </div>
+                    <div class="btn-field">
+                        <button type="submit">Sign in</button>
+                        <button type="button" id="signupBtn" onclick="location.href='{{ url_for("register_user") }}';">Sign up</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>
+

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Admin Dashboard</h1>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('admin_dashboard') }}">Home</a></li>
+                <li><a href="{{ url_for('create_event') }}">Add Event</a></li>
+                <li><a href="{{ url_for('home') }}">Add User</a></li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <h2>Events</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Date</th>
+                    <th>Price</th>
+                    <th>Venue</th>
+                    <th>Description</th>
+                    <th>Image</th>
+                    <th>Category</th>
+                    <th>Tickets</th>
+                    <th>Tickets Sold</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for event in events %}
+                <tr>
+                    <td>{{ event.name }}</td>
+                    <td>{{ event.date }}</td>
+                    <td>{{ event.price }}</td>
+                    <td>{{ event.venue }}</td>
+                    <td>{{ event.description }}</td>
+                    <td><img src="{{ event.image }}" alt="{{ event.name }}"></td>
+                    <td>{{ event.category }}</td>
+                    <td>{{ get_tickets_count(event.id) }}</td>
+                    <td>{{ get_tickets_count(event.id) }}</td>
+                    <td>
+                        <a href="{{ url_for('edit_event', event_id=event.id) }}">Edit</a>
+                        <a href="{{ url_for('new_ticket', event_id=event.id) }}">Add Tickets</a>
+                        <form action="{{ url_for('delete_event', event_id=event.id) }}" method="POST">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <button type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <h2>Users</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.name }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.role }}</td>
+                    <td>
+                        {% if user.role == 'user' %}
+                            <form action="{{ url_for('update_role', user_id=user.id) }}" method="POST">
+                                <input type="hidden" name="_method" value="PUT">
+                                <button type="submit" class="make-user">Make Admin</button>
+                            </form>
+                        {% else %}
+                            <form action="{{ url_for('update_role', user_id=user.id) }}" method="POST">
+                                <input type="hidden" name="_method" value="PUT">
+                                <button type="submit" class="make-admin">Make User</button>
+                            </form>
+                        {% endif %}
+
+                        <form action="{{ url_for('delete_user', user_id=user.id) }}" method="POST">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <button type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </main>
+</body>
+</html>
+

@@ -1,7 +1,7 @@
 -- prepares a MySQL server for the project
 CREATE DATABASE IF NOT EXISTS tickets;
 CREATE USER IF NOT EXISTS 'test'@'localhost' IDENTIFIED WITH mysql_native_password BY 'pswd';
-GRANT ALL ON `test`.* TO 'test'@'localhost'
+GRANT ALL ON `test`.* TO 'test'@'localhost';
 GRANT SELECT ON `performance_schema`.* TO 'root'@'localhost';
 FLUSH PRIVILEGES;
 
@@ -9,34 +9,34 @@ FLUSH PRIVILEGES;
 
 USE tickets;
 
-CREATE TABLE events (
-  id INT(11) NOT NULL AUTO_INCREMENT,
-  name VARCHAR(255) NOT NULL,
-  date DATE NOT NULL,
-  time TIME NOT NULL,
-  location VARCHAR(255) NOT NULL,
-  price DECIMAL(10,2) NOT NULL,
-  description TEXT NOT NULL,
-  PRIMARY KEY (id)
+CREATE TABLE IF NOT EXISTS events (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    date TIMESTAMP NOT NULL,
+    price FLOAT NOT NULL,
+    venue VARCHAR(255) NOT NULL,
+    category VARCHAR(255) NOT NULL,
+    image VARCHAR(255)
 );
 
-CREATE TABLE tickets (
-  id INT(11) NOT NULL AUTO_INCREMENT,
-  event_id INT(11) NOT NULL,
-  email VARCHAR(255) NOT NULL,
-  quantity INT(11) NOT NULL,
-  total_price DECIMAL(10,2) NOT NULL,
-  PRIMARY KEY (id),
-  FOREIGN KEY (event_id) REFERENCES events(id)
+CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('user', 'admin') DEFAULT 'user'
 );
 
-CREATE TABLE users (
-  id INT(11) NOT NULL AUTO_INCREMENT,
-  name VARCHAR(255) NOT NULL,
-  email VARCHAR(255) NOT NULL,
-  password VARCHAR(255) NOT NULL,
-  PRIMARY KEY (id),
-  UNIQUE KEY (email)
+CREATE TABLE IF NOT EXISTS tickets (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    event_id INTEGER,
+    user_id INTEGER,
+    quantity INTEGER,
+    price FLOAT,
+    status ENUM('Available', 'Sold') DEFAULT 'Available',
+    FOREIGN KEY (event_id) REFERENCES events (id),
+    FOREIGN KEY (user_id) REFERENCES users (id)
 );
 
 CREATE TABLE payments (

@@ -1,39 +1,41 @@
+/* login.css */
 body {
   font-family: 'Poppins', sans-serif;
-  background-color: #ffffff;
+  background-color: #f8f8f8; /* Change to match the provided background color */
   margin: 0;
   padding: 0;
 }
 
 header {
-  background-color: #0a3d62;
+  background-color: #3c00a0; /* Change to match the provided background color */
   color: #ffffff;
   text-align: center;
   padding: 20px;
-}
-
-h1 {
-  margin: 0;
 }
 
 main {
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
-  background-color: #e67e22;
+  background-color: #f8f8f8; /* Change to match the provided background color */
   text-align: center;
 }
 
 form {
   display: inline-block;
   text-align: left;
+  background-color: #ffffff; /* Add a background color to the form */
+  padding: 20px; /* Add padding to the form */
+  border-radius: 5px; /* Add border-radius to the form */
 }
 
 label {
   display: block;
   margin-top: 10px;
+  color: #3c00a0; /* Change label color to match the provided color */
 }
 
+input[type="text"],
 input[type="email"],
 input[type="password"] {
   display: block;
@@ -42,6 +44,7 @@ input[type="password"] {
   margin-top: 5px;
   border: none;
   border-radius: 3px;
+  background-color: #f2f2f2; /* Change input field background color to match the provided color */
 }
 
 button[type="submit"] {
@@ -49,36 +52,29 @@ button[type="submit"] {
   width: 100%;
   padding: 10px;
   margin-top: 10px;
-  background-color: #ffffff;
-  color: #0a3d62;
+  background-color: #3c00a0; /* Change button background color to match the provided color */
+  color: #ffffff;
   border: none;
   border-radius: 3px;
   cursor: pointer;
   font-weight: bold;
+  transition: background-color 0.5s; /* Add transition to button background color */
+}
+
+button[type="submit"]:hover {
+  background-color: #543887; /* Add hover effect to button */
 }
 
 a {
-  color: #ffffff;
+  color: #3c00a0; /* Change link color to match the provided color */
+  text-decoration: none; /* Remove underline from link */
 }
 
 footer {
-  background-color: #0a3d62;
+  background-color: #3c00a0; /* Change to match the provided background color */
   color: #ffffff;
   text-align: center;
   padding: 20px;
-}
-
-.messages {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
-
-.messages li {
-  margin-bottom: 10px;
-  padding: 10px;
-  background-color: #ffffff;
-  color: #0a3d62;
-  border-radius: 3px;
+  margin-top: 50px; /* Add margin to footer to create spacing between form and footer */
 }
 
