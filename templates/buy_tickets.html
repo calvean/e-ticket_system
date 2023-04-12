@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Buy Ticket</title>
+  <nav>
+    <ul>
+      <li><a href="{{ url_for('home') }}">Home</a></li>
+      <li><a href="{{ url_for('logout') }}">Logout</a></li>
+    </ul>
+  </nav>
+</head>
+<body>
+  <h1>Buy Ticket</h1>
+  {% if error %}
+    <p style="color:red">{{ error }}</p>
+  {% endif %}
+  {% if success %}
+    <p style="color:green">{{ success }}</p>
+  {% endif %}
+  <form action="{{ url_for('buy_ticket', event_id=event.id) }}" method="post">
+    <div>
+      <label for="name">Name</label>
+      <input type="text" name="name" required>
+    </div>
+    <div>
+      <label for="email">Email</label>
+      <input type="email" name="email" required>
+    </div>
+    <div>
+      <label for="quantity">Quantity</label>
+      <input type="number" name="quantity" required>
+    </div>
+    <button type="submit">Buy</button>
+  </form>
+  <footer>
+    <p>&copy; 2023 Online Ticket System</p>
+  </footer>
+</body>
+</html>
+
