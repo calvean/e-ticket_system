@@ -10,6 +10,7 @@ from database import create_connection, create_tables, insert_event, insert_user
 from __init__ import app
 import os
 from werkzeug.utils import secure_filename
+import re
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
@@ -36,7 +37,7 @@ def register_user():
         print(user)
         session['user_id'] = user.id
         session['role'] = user.role
-        return redirect(url_for('home'))
+        return redirect(url_for('login_user'))
     else:
         return render_template('register.html')
 
@@ -74,11 +75,39 @@ def home():
     if 'user_id' not in session:
         return redirect(url_for('login_user'))
 
-    events = Event.get_all()
-    print(events)
+    events = Event.get_upcoming()
+    print("Upcoming Events:{}".format(events))
+    event = Event.get_by_user_id(session['user_id'])
     user = User.get_by_id(session['user_id'])
-    return render_template('dashboard.html', events=events, user=user)
+    tickets = Ticket.get_by_user_id(session['user_id'])
+    event_name = None
+    if event:
+        event = event[0] # get the first event from the list
+        event_name = Event.get_by_id(event.event_id)
 
+
+    return render_template('dashboard.html', events=events, myevents=event, tickets=tickets, event_name=event_name, user=user)
+
+@app.route('/user/<int:user_id>/events')
+def user_events(user_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login_user'))
+
+    event = Event.get_by_user_id(session['user_id'])
+    user = User.get_by_id(session['user_id'])
+
+    return render_template('user_events.html', event=event, user=user)
+
+""" User Tickets """
+@app.route('/user/<int:user_id>/tickets')
+def user_tickets(user_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login_user'))
+    tickets = Ticket.get_by_user_id(session['user_id'])
+    event = Event.get_by_user_id(session['user_id'])
+    user = User.get_by_id(session['user_id'])
+
+    return render_template('user_tickets.html', event=event, tickets=tickets, user=user)
 
 """ Admin Routes """
 
@@ -115,7 +144,7 @@ def view_tickets(event_id):
         return redirect(url_for('home'))
     event = Event.get_by_id(event_id)
     tickets = Ticket.get_by_event_id(event_id)
-    ticket_count = sum(ticket.event_id for ticket in tickets)
+    ticket_count = get_ticket_count(event_id)[0]
     return render_template('view_tickets.html', event=event, ticket_count=ticket_count, tickets=tickets)
 
 """ Admin Add New Tickets """
@@ -201,13 +230,23 @@ def edit_event(event_id):
     if request.method == 'POST':
         event.name = request.form['name']
         event.description = request.form['description']
-        event.date = datetime.strptime(request.form['date'], '%Y-%m-%d %H:%M:%S')
+        date = request.form['date']
+        time_str = request.form['time']
         event.price = float(request.form['price'])
         event.venue = request.form['venue']
         event.category = request.form['category']
-        event.image = request.form['image']
+        
+        image = upload_file() 
+        event.image = image
+        
+        event_datetime = datetime.strptime(date + ' ' + time_str, '%Y-%m-%d %H:%M')
+        event_time = event_datetime.time()
+        event_date_time = datetime.combine(event_datetime.date(), event_time)
+        event_date_time_str = event_date_time.strftime('%Y-%m-%d %H:%M')
+        
+        event.date = event_date_time_str
         event.save()
-        return redirect(url_for('view_events',event_id=event.id))
+        return redirect(url_for('admin_dashboard'))
     else:
         return render_template('edit_event.html', event=event)
 
@@ -219,11 +258,20 @@ def delete_event(event_id):
     event = Event.get_by_id(event_id)
     if event is None:
         return redirect(url_for('admin_dashboard'))
+
+    # Delete any tickets associated with the event
+    tickets = Ticket.get_by_event_id(event_id)
+    for ticket in tickets:
+        ticket.delete()
+
+    # Delete the event itself
     event.delete()
+
     return redirect(url_for('admin_dashboard'))
 
+
 """ Update user Info """
-@app.route('/admin/users/<int:user_id>', methods=['POST'])
+@app.route('/users/<int:user_id>', methods=['POST'])
 def update_user(user_id):
     user = User.get_by_id(user_id)
     if user is None:
@@ -235,7 +283,7 @@ def update_user(user_id):
     user.email = email
     user.password = password
     user.save()
-    return redirect('/users/{}'.format(user.id))
+    return redirect(request.referrer)
 
 """ Admin Delete Users"""
 @app.route('/admin/users/<int:user_id>/delete', methods=['POST'])
@@ -263,10 +311,92 @@ def update_role(user_id):
 
     return redirect(url_for('admin_dashboard'))
 
+@app.route('/admin/users/add', methods=['GET', 'POST'])
+def add_user():
+    if 'user_id' not in session or session['role'] != 'admin':
+        return redirect(url_for('home'))
+    
+    if request.method == 'POST':
+        # Get form data
+        name = request.form['username']
+        email = request.form['email']
+        password = request.form['password']
+        role = request.form['role']
+        
+
+        
+                # Check if user is already registered
+        if User.get_by_email(email) is not None:
+            print(User.get_by_email(email))
+            flash('User already exists', 'error')
+            return render_template('add_user.html')
+        
+        # Create user object
+        user = User(name=name, email=email, password=password, role=role)
+        # Save user to database
+        user.save()
+        
+        # Redirect to user list page
+        return redirect(url_for('admin_dashboard'))
+    else:
+        # Render add user page
+        return render_template('add_user.html')
+
+@app.route('/user/<int:user_id>/profile', methods=['GET', 'POST'])
+def user_profile(user_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login_user'))
+
+    user = User.get_by_id(session['user_id'])
+
+    if request.method == 'POST':
+        name = request.form['name']
+        email = request.form['email']
+        password = request.form['password']
+        confirm_password = request.form['confirm_password']
+
+        # Validate the form data
+        errors = []
+
+        if not name:
+            errors.append('Name is required.')
+
+        if not email:
+            errors.append('Email is required.')
+        elif not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+            errors.append('Email is not valid.')
+
+        if password:
+            if len(password) < 6:
+                errors.append('Password must be at least 6 characters long.')
+            elif password != confirm_password:
+                errors.append('Passwords do not match.')
+
+        if errors:
+            print(errors)
+            return render_template('user_profile.html', user=user, errors=errors)
+
+        # Update the user's data in the database
+        user.name = name
+        user.email = email
+
+        if password:
+            user.hash_password(password)
+
+        user.save()
+
+        flash('Profile updated successfully.', 'success')
+        print('Profile updated successfully.')
+        return redirect(url_for('home'))
+
+    return render_template('user_profile.html', user=user)
+
 @app.route('/users/events/<int:event_id>')
 def event_detail(event_id):
     event = Event.get_by_id(event_id)
-    return render_template('event_detail.html', event=event)
+    user = User.get_by_id(session['user_id'])
+    print("Event path: {}".format(event.image))
+    return render_template('event_details.html', event=event, user=user)
 
 
 """ Get The number of Tickets for an event """
@@ -275,12 +405,13 @@ def get_ticket_count(event_id):
     sold_tickets = 0
     ticket_count = []
     for ticket in tickets:
-        print("tickets:{}".format(ticket_count))
-        if ticket.status == 'Sold':
+        if ticket.status != 'Available':
             sold_tickets += 1
     total_tickets = len(tickets)
-    ticket_count = [total_tickets, sold_tickets ]
+    ticket_count = [total_tickets, sold_tickets]
+    print("Total Tickets: {} . Sold Tickets:{}".format(ticket_count[0], ticket_count[1]))
     return ticket_count
+
 
 
 """Check if the file type is allowed """
@@ -309,41 +440,52 @@ def upload_file():
         return filename
 
 @app.route('/events/<int:event_id>/buy_tickets', methods=['GET', 'POST'])
-def buy_tickets(event_id):
+def buy_ticket(event_id):
     event = Event.get_by_id(event_id)
     if event is None:
-        return redirect('/')
-    
+        return redirect(url_for('home'))
+
+    ticket_count = get_ticket_count(event_id)
+    total_tickets = ticket_count[0]
+    print("Total Tickets for {} are: {}".format(event.name, total_tickets))
+    sold_tickets = ticket_count[1]
+    print("Sold Tickets for {} are: {}".format(event.name, sold_tickets))
+    tickets_available = total_tickets - sold_tickets
+    print("Tickets Available for {} are: {}".format(event.name, tickets_available))
+
     if request.method == 'POST':
         if 'user_id' not in session:
-            return redirect('/login')
+            return redirect(url_for('login_user'))
         user = User.get_by_id(session['user_id'])
         if user is None:
-            return redirect('/login')
-        
+            return redirect(url_for('login_user'))
+
         quantity = int(request.form['quantity'])
         if quantity <= 0:
-            return render_template('buy_tickets.html', event=event, error='Invalid quantity')
-        
+            return render_template('buy_tickets.html', event=event, tickets_available=tickets_available, error='Invalid quantity')
+        elif quantity > tickets_available:
+            return render_template('buy_tickets.html', event=event, tickets_available=tickets_available, error='Not enough tickets available')
+
         total_price = quantity * event.price
-        
+
         try:
             payment = create_payment(total_price, {
                 "return_url": url_for('buy_tickets_confirm', event_id=event_id, _external=True),
-                "cancel_url": url_for('buy_tickets', event_id=event_id, _external=True)
+                "cancel_url": url_for('buy_ticket', event_id=event_id, _external=True)
             })
-            
+
             for link in payment.links:
                 if link.rel == "approval_url":
                     return redirect(link.href)
-            
-            return render_template('buy_tickets.html', event=event, error='Payment error')
-        
+
+            return render_template('buy_tickets.html', event=event, tickets_available=tickets_available, error='Payment error')
+
         except ValueError as e:
-            return render_template('buy_tickets.html', event=event, error=str(e))
-    
+            return render_template('buy_tickets.html', event=event, tickets_available=tickets_available, error=str(e))
+
     else:
-        return render_template('buy_tickets.html', event=event)
+        return render_template('buy_tickets.html', event=event, tickets_available=tickets_available)
+
         
 @app.route('/events/<int:event_id>/buy_tickets/confirm')
 def buy_tickets_confirm(event_id):
@@ -372,6 +514,8 @@ def buy_tickets_confirm(event_id):
     
     flash('Payment successful!')
     return redirect('/events/{}'.format(event_id))
+
+
 
 """ Event Tickets """
 @app.route('/user/events/<int:event_id>/tickets')
@@ -447,4 +591,4 @@ def get_user_by_email(email):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0')

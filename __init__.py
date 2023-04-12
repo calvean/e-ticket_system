@@ -2,7 +2,9 @@
 from flask import Flask
 from database import create_connection, create_tables, insert_event, insert_user, check_database
 
-UPLOAD_FOLDER = 'uploads'
+
+
+UPLOAD_FOLDER = 'static/uploads'
 
 
 app = Flask(__name__, static_url_path='/static')

@@ -43,6 +43,13 @@ class Event:
         conn.commit()
         conn.close()
 
+    def __str__(self):
+        return f"{self.name} ({self.date}): {self.description[:50]}..."
+
+    def __repr__(self):
+        return f"Event(id={self.id}, name={self.name}, date={self.date}, price={self.price})"
+
+
     def delete(self):
         conn = create_connection()
         cursor = conn.cursor()
@@ -99,7 +106,7 @@ class Event:
         for row in rows:
             event = cls(*row)
             events.append(event)
-
+        print("This is events from events module:{}".format(events))
         return events
 
     @classmethod
@@ -119,3 +126,25 @@ class Event:
 
         return events
 
+    @classmethod
+    def get_by_user_id(cls, user_id):
+        conn = create_connection()
+        cursor = conn.cursor()
+
+        query = """
+            SELECT e.*
+            FROM events e
+            INNER JOIN tickets t ON e.id = t.event_id
+            WHERE t.user_id = %s
+            ORDER BY e.date DESC
+        """
+        cursor.execute(query, (user_id,))
+        rows = cursor.fetchall()
+        conn.close()
+
+        events = []
+        for row in rows:
+            event = Event(*row)
+            events.append(event)
+
+        return events
