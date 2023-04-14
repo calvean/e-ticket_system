@@ -124,7 +124,7 @@ class Event:
         for row in rows:
             event = cls(*row)
             events.append(event)
-        print("This is events from events module:{}".format(events))
+
         return events
 
     @classmethod

@@ -140,7 +140,6 @@ def check_database():
         cursor.execute(query)
         events_result = cursor.fetchall()
 
-        """ If the events result is empty, the database is empty """"
         if not events_result:
             """ Insert a sample event """
             insert_event(
@@ -153,12 +152,10 @@ def check_database():
                 image=None
             )
 
-        """ Test the connection by selecting data from the users table """
         query = "SELECT * FROM users"
         cursor.execute(query)
         users_result = cursor.fetchall()
 
-        """ If the users result is empty, the database is empty """
         if not users_result:
             """ Insert a sample user """
             insert_user(
@@ -225,8 +222,7 @@ def check_database():
                 password="admin",
                 role="admin"
             )
-        """ print("Sample data added to the database")
+            print("Sample data added to the database")
 
         else:
-           print(f"Database connection error: {error}")
-        """
+            print(f"Database connection error: {error}")
