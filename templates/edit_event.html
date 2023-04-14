@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Evventing Edit Event</title>
+</head>
+<body>
+  <h1>Edit Event</h1>
+  <form action="{{ url_for('edit_event', event_id=event.id) }}" method="post" enctype="multipart/form-data">
+    <div>
+      <label for="name">Name</label>
+      <input type="text" name="name" value="{{ event.name }}" required>
+    </div>
+    <div>
+      <label for="description">Description</label>
+      <textarea name="description" rows="5" required>{{ event.description }}</textarea>
+    </div>
+    <div>
+      <label for="time">Time</label>
+      <input type="time" name="time" value="{{ event.date.strftime('%H:%M') }}" required>
+    </div>
+    <div>
+      <label for="date">Date</label>
+      <input type="date" name="date" value="{{ event.date.strftime('%Y-%m-%d') }}" required>
+    </div>
+    <div>
+      <label for="venue">Venue</label>
+      <input type="text" name="venue" value="{{ event.venue }}" required>
+    </div>
+    <div>
+    <label for="category">Category:</label>
+    <select id="category" name="category">
+        <option value="Music" {{ 'selected' if event.category == 'Music' else '' }}>Music</option>
+        <option value="Sport" {{ 'selected' if event.category == 'Sport' else '' }}>Sport</option>
+        <option value="Conference" {{ 'selected' if event.category == 'Conference' else '' }}>Conference</option>
+        <option value="Party" {{ 'selected' if event.category == 'Party' else '' }}>Party</option>
+        <option value="Theater" {{ 'selected' if event.category == 'Theater' else '' }}>Theater</option>
+        <option value="Show" {{ 'selected' if event.category == 'Show' else '' }}>Show</option>
+        <option value="Presentation" {{ 'selected' if event.category == 'Presentation' else '' }}>Presentation</option>
+        <option value="Other" {{ 'selected' if event.category == 'Other' else '' }}>Other</option>
+    </select>
+
+    </div>
+    <div>
+            <label for="price">Price:</label>
+            <input type="number" id="price" name="price" min="0" step="0.01" value="{{ event.price }}" required>
+    </div>
+    <div>
+      <label for="image">Image:</label>
+      <input type="file" id="image" name="image" accept="image/*" required>
+      {% if event.image %}
+      <img src="{{ url_for('static', filename='uploads/' + event.image) }}" alt="{{ event.name }}" height="100px">
+      {% endif %}
+    </div>
+    <button type="submit">Update</button>
+  </form>
+  <footer>
+    <p>&copy; 2023 Evventing</p>
+  </footer>
+</body>
+</html>
+

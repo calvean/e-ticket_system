@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>My Tickets</title>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='dashboard.css') }}">
+</head>
+<body>
+	<header>
+		<nav>
+			<ul>
+				<li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('user_profile', user_id=user.id) }}">Profile</a></li>
+				<li><a href="{{ url_for('logout') }}">Logout</a></li>
+			</ul>
+		</nav>
+	</header>
+
+	<main>
+		<section>
+			<h2>My Tickets</h2>
+          <ul class="ticket-list">
+            {% if tickets %}
+              {% for ticket in tickets %}
+                <li class="ticket">
+                  <div class="ticket-details">
+                    <h3 class="event-name">{{ event_name.get(ticket.event_id).name }}</h3>
+                    <p class="event-venue">{{ event_name.get(ticket.event_id).venue }}</p>
+                    <p class="ticket-date">{{ ticket.date }}</p>
+                    <p class="ticket-price">${{ ticket.price }}</p>             
+                  </div>
+                </li>
+              {% endfor %}
+            {% else %}
+              <p>No purchased tickets found.</p>
+            {% endif %}
+          </ul>
+		</section>
+	</main>
+    <footer>
+      <p>&copy; 2023 Evventing</p>
+    </footer>
+</body>
+</html>
+

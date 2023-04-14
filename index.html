@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Evventing</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+  </head>
+  <body>
+    <header>
+      <nav>
+        <ul>
+          <li><a href="{{ url_for('home') }}" aria-label="Home page">Home</a></li>
+          <li><a href="{{ url_for('events') }}" aria-label="Events page">Events</a></li>
+          <li><a href="{{ url_for('login') }}" aria-label="Login page">Login</a></li>
+          <li><a href="{{ url_for('register') }}" aria-label="Register page">Register</a></li>
+        </ul>
+      </nav>
+    </header>
+    <main>
+      <section class="hero">
+        <div class="container">
+          <h1>Welcome to Eventing</h1>
+          <p>Evventing is an online platform for buying tickets for events at the comfort of your home.</p>
+          <a href="{{ url_for('events') }}" class="btn" aria-label="View events page">View Events</a>
+        </div>
+      </section>
+      <section class="features">
+        <div class="container">
+          <div class="feature">
+            <img src="feature1.jpg" alt="Feature 1: Browse events">
+            <h2>Browse Events</h2>
+            <p>Browse all the events available</p>
+          </div>
+          <div class="feature">
+            <img src="feature2.jpg" alt="Feature 2: Buy tickets with Paypal">
+            <h2>Payments</h2>
+            <p>Buy Your Tickets with Paypal.</p>
+          </div>
+          <div class="feature">
+            <img src="feature3.jpg" alt="Feature 3: Add and manage events">
+            <h2>Manage Events</h2>
+            <p>An Admin can Add and Manage Events.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer>
+      <p>&copy; 2023 Evventing. All rights reserved.</p>
+    </footer>
+  </body>
+</html>
+

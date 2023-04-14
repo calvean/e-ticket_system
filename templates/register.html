@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Register | Evventing</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+  </head>
+  <body>
+    <header>
+      <h1>Online Ticket System</h1>
+    </header>
+    <main>
+      <h2>Register</h2>
+      <form method="post">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+
+        <button type="submit">Register</button>
+      </form>
+      <p>Already have an account? <a href="{{ url_for('login_user') }}">Login here</a>.</p>
+    </main>
+    <footer>
+      <p>&copy; 2023 Evventing</p>
+    </footer>
+  </body>
+</html>
+

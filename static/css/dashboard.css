@@ -1,0 +1,298 @@
+/* dashboard.css */
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #f8f8f8;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background-color: #3c00a0;
+  color: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+}
+
+header h1 {
+  margin: 0;
+}
+
+nav {
+  display: flex;
+  align-items: center;
+}
+
+nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+
+nav li {
+  margin-left: 20px;
+}
+
+nav a {
+  color: #ffffff;
+  text-decoration: none;
+  transition: color 0.5s; /* Add transition to link color */
+}
+
+nav a:hover {
+  color: #f2f2f2; /* Add hover effect to link color */
+}
+
+main {
+  width: 95%;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f8f8f8;
+  text-align: center;
+}
+
+form {
+  display: inline-block;
+  text-align: left;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 5px;
+}
+
+label {
+  display: block;
+  margin-top: 10px;
+  color: #3c00a0;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: none;
+  border-radius: 3px;
+  background-color: #f2f2f2;
+}
+
+button[type="submit"] {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  background-color: #3c00a0;
+  color: #ffffff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.5s;
+}
+
+button[type="submit"]:hover {
+  background-color: #543887;
+}
+
+a {
+  color: #3c00a0;
+  text-decoration: none;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.section h2 {
+  margin: 0;
+  text-align: center;
+}
+
+.events {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.event {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 20px;
+  background-color: #ffffff;
+  border-radius: 5px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.18);
+}
+
+.event img {
+  width: 200px;
+  height: 200px;
+  margin-right: 20px;
+  border-radius: 5px 0 0 5px;
+}
+
+.event-details {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  flex: 1;
+  padding: 10px;
+}
+.event-details h3 {
+  margin: 0;
+  margin-right: 10px;
+  font-size: 20px;
+  font-weight: bold;
+  color: #3c00a0;
+}
+
+.event-details .price {
+  margin-right: 10px;
+  font-size: 16px;
+  flex-direction: column;
+  color: #666666;
+}
+
+.event-details .buy-ticket {
+  margin-left: auto;
+}
+
+.event-details .venue {
+  font-size: 16px;
+  color: #666666;
+  margin-top: 5px;
+}
+
+.event-details .description {
+  font-size: 14px;
+  color: #666666;
+  margin-top: 5px;
+  margin-right: 10px;
+  flex: 1;
+}
+
+.upcoming-events .event-details h3 {
+  margin: 0;
+  margin-right: 10px;
+}
+
+.upcoming-events .event-details .price {
+  margin-right: 10px;
+}
+
+.upcoming-events .event-details .buy-ticket {
+  margin-left: auto;
+}
+
+.upcoming-events .event-details .event-venue {
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.upcoming-events .event-details .event-description {
+  margin-top: 10px;
+}
+
+.upcoming-events .event-details .event-description p {
+  margin: 0;
+}
+
+.purchased-events {
+  margin-top: 20px;
+}
+
+.purchased-events .event {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.purchased-events .event img {
+  width: 100px;
+  margin-right: 20px;
+}
+
+.purchased-events .event .event-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.purchased-events .event .event-details h3 {
+  margin: 0;
+  margin-bottom: 10px;
+}
+
+.purchased-events .event .event-details .event-venue {
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.purchased-events .event .event-details .event-description {
+  margin-bottom: 10px;
+}
+
+.purchased-tickets {
+  margin-top: 20px;
+}
+
+.purchased-tickets .ticket {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.purchased-tickets .ticket img {
+  width: 100px;
+  margin-right: 20px;
+}
+
+.purchased-tickets .ticket .ticket-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.purchased-tickets .ticket .ticket-details h3 {
+  margin: 0;
+  margin-bottom: 10px;
+}
+
+.purchased-tickets .ticket .ticket-details .event-name {
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.purchased-tickets .ticket .ticket-details .event-details {
+  margin-bottom: 10px;
+}
+
+.purchased-tickets .ticket .ticket-details .ticket-info {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.purchased-tickets .ticket .ticket-details .ticket-info p {
+  margin: 0;
+}

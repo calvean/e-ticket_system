@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Event</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/create_event.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Create Tickets</h1>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('admin_dashboard') }}">Home</a></li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+<body>
+    <div class="container">
+        <h1>New Ticket</h1>
+        {% if error %}
+        <div class="alert alert-danger" role="alert">
+            {{ error }}
+        </div>
+        {% endif %}
+        <form method="POST">
+            <div class="form-group">
+                <label for="event-name">Event Name</label>
+                <input type="text" class="form-control" id="event-name" name="event-name" value="{{ event.name }}" readonly>
+            </div>
+            <div class="form-group">
+                <label for="event-date">Event Date</label>
+                <input type="text" class="form-control" id="event-date" name="event-date" value="{{ event.date }}" readonly>
+            </div>
+            <div class="form-group">
+                <label for="quantity">Quantity</label>
+                <input type="number" class="form-control" id="quantity" name="quantity" min="1" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Create Ticket</button>
+        </form>
+    </div>
+    <footer>
+        <p>&copy; 2023 Evventing</p>
+    </footer>
+</body>
+</html>
+

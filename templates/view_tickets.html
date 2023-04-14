@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Tickets</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body>
+    <header>
+        <h1>View Tickets</h1>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('admin_dashboard') }}">Home</a></li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <h1>View Tickets</h1>
+    <p>Event Name: {{ event.name }}</p>
+    <p>Event Date: {{ event.date }}</p>
+    <p>Tickets Sold: {{ ticket_sold }}</p>
+    <p>Total Tickets: {{ ticket_count }}</p>
+    <p><a href="{{ url_for('new_ticket', event_id=event.id) }}">Add Tickets</a></p>
+    <p><a href="{{ url_for('delete_all_tickets', event_id=event.id) }}">Delete All Tickets</a></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Ticket ID</th>
+          <th>User ID</th>
+          <th>Quantity</th>
+          <th>Price</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ticket in tickets %}
+        <tr>
+          <td>{{ ticket.id }}</td>
+          <td>{{ ticket.user_id }}</td>
+          <td>{{ ticket.quantity }}</td>
+          <td>{{ ticket.price }}</td>
+          <td>{{ ticket.status }}</td>
+          <td>
+            <form action="{{ url_for('delete_ticket', ticket_id=ticket.id, event_id=event.id) }}" method="POST">
+                <input type="hidden" name="_method" value="DELETE">
+                <button type="submit">Delete Ticket</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <footer>
+      <p>&copy; 2023 Evventing</p>
+    </footer>
+  </body>
+</html>
+

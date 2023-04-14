@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Evventing</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+  </head>
+  <body>
+    <header>
+      <h1>Online Ticket System</h1>
+    </header>
+    <main>
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <ul class="messages">
+            {% for message in messages %}
+              <li>{{ message }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      {% endwith %}
+      <h2>Login</h2>
+      <form action="{{ url_for('login_user') }}" method="post">
+        <label for="email">Email:</label>
+        <input type="email" name="email" id="email" required>
+        <label for="password">Password:</label>
+        <input type="password" name="password" id="password" required>
+        <button type="submit">Login</button>
+      </form>
+      <p>Don't have an account? <a href="{{ url_for('register_user') }}">Register here</a>.</p>
+    </main>
+    <footer>
+      <p>&copy; 2023 Evventing</p>
+    </footer>
+  </body>
+</html>
+

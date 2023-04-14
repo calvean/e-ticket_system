@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>User Profile</title>
+    <nav>
+	    <ul>
+		    <li><a href="{{ url_for('home') }}">Home</a></li>
+		    <li><a href="{{ url_for('logout') }}">Logout</a></li>
+	    </ul>
+    </nav>
+  </head>
+  <body>
+    <h1>User Profile</h1>
+    <p>Welcome to your user profile. Here you can update your personal information.</p>
+    <form action="{{ url_for('user_profile', user_id=user.id) }}" method="POST">
+      <label for="name">Name:</label>
+      <input type="text" name="name" value="{{ user.name }}"><br><br>
+      <label for="email">Email:</label>
+      <input type="email" name="email" value="{{ user.email }}"><br><br>
+      <label for="password">New Password:</label>
+      <input type="password" name="password"><br><br>
+      <label for="confirm_password">Confirm New Password:</label>
+      <input type="password" name="confirm_password"><br><br>
+      <button type="submit">Update</button>
+    </form>
+    <footer>
+      <p>&copy; 2023 Evventing</p>
+    </footer>
+  </body>
+</html>
+
